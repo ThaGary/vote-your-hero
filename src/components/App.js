@@ -7,30 +7,26 @@ import {
 import { Button, Container, Header, Item } from 'semantic-ui-react'
 import firebase from '../firebase'
 import NewCandidate from './NewCandidate'
+import Result from './Result'
 
 class Main extends Component {
   state = {
     votes: {},
     loading: true,
     isVoted: false,
-    candidates: [
-      'Kan',
-      'Cory',
-      'Mils',
-      'Natty',
-    ],
   }
 
   resetVote = () => {
-    const { candidates } = this.state
+    const { votes } = this.state
+    const candidates = Object.keys(votes)
     let initialVotes = {}
-    candidates.forEach((c) => {
-      let ref = firebase.database().ref(`votes/${c}`)
+    candidates.forEach((candidate) => {
+      let ref = firebase.database().ref(`votes/${candidate}`)
       ref.remove()
       ref.update({
         count: 0
       })
-      initialVotes[c] = 0
+      initialVotes[candidate] = 0
     })
     this.setState({
       votes: initialVotes,
@@ -53,24 +49,25 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    const { candidates } = this.state
+    let refVotes = firebase.database().ref('votes')
     let initialVotes = {}
-    candidates.forEach((c) => {
-      let ref = firebase.database().ref(`votes/${c}`)
-      ref.once('value', (snapshot) => {
-        let count = 0
-        if (snapshot.val() !== null) {
-          count = snapshot.val().count
-        }
-        initialVotes[c] = count
-        console.log(initialVotes)
-        this.setState({
-          votes: initialVotes,
+    refVotes.once('value', (snapshot) => {
+      for (let candidate in snapshot.val()) {
+        let ref = firebase.database().ref(`votes/${candidate}`)
+        ref.once('value', (snapshot) => {
+          let count = 0
+          if (snapshot.val() !== null) {
+            count = snapshot.val().count
+          }
+          initialVotes[candidate] = count
+          this.setState({
+            votes: initialVotes,
+          })
         })
+      }
+      this.setState({
+        loading: false,
       })
-    })
-    this.setState({
-      loading: false,
     })
   }
 
@@ -97,15 +94,16 @@ class Main extends Component {
       'vk',
       'youtube',
     ]
-    const { candidates } = this.state
-    const items = candidates.map((c, i) => ({
+    const { votes } = this.state
+    const candidates = Object.keys(votes)
+    const items = candidates.map((candidate, i) => ({
         childKey: i + 1,
         children: <Button
           size='massive'
           color={colors[i]}
-          onClick={() => this.handleClick(c)}
+          onClick={() => this.handleClick(candidate)}
           disabled={this.state.isVoted}>
-          {c}
+          {candidate}
         </Button>
       })
     )
@@ -113,9 +111,15 @@ class Main extends Component {
     return (
       <Container>
         <Header as='h1'>Vote Your Hero!</Header>
-        <div>{ (this.state.loading ) ? 'Loading...' : this.state.count }</div>
-        <Button onClick={this.resetVote}>Reset</Button>
-        <Item.Group items={items} />
+        {this.state.loading ? (
+          <div>Loading...</div>
+        ) : (
+          <div>
+            <div>{ this.state.count }</div>
+            <Button onClick={this.resetVote}>Reset Vote</Button>
+            <Item.Group items={items} />
+          </div>
+        )}
       </Container>
     )
   }
@@ -128,13 +132,13 @@ class App extends Component {
         <div>
           <ul>
             <li><Link to="/">Home</Link></li>
-            <li><Link to="/candidates/">Candidates</Link></li>
+            <li><Link to="/candidates/">Add New Candidate</Link></li>
+            <li><Link to="/results/">Results</Link></li>
           </ul>
-
           <hr/>
-
-          <Route exact path="/" component={Main}/>
-          <Route path="/candidates/" component={NewCandidate}/>
+          <Route exact path="/" component={Main} />
+          <Route path="/candidates/" component={NewCandidate} />
+          <Route path="/results/" component={Result} />
         </div>
       </Router>
     )
