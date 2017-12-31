@@ -76,10 +76,26 @@ class Main extends Component {
 
   render() {
     const colors = [
+      'red',
       'orange',
+      'yellow',
+      'olive',
       'green',
+      'teal',
+      'blue',
       'violet',
+      'purple',
+      'pink',
       'brown',
+      'grey',
+      'black',
+      'facebook',
+      'google plus',
+      'instagram',
+      'linkedin',
+      'twitter',
+      'vk',
+      'youtube',
     ]
     const { candidates } = this.state
     const items = candidates.map((c, i) => ({
