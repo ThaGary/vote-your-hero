@@ -51,7 +51,7 @@ class Main extends Component {
   componentDidMount() {
     let refVotes = firebase.database().ref('votes')
     let initialVotes = {}
-    refVotes.once('value', (snapshot) => {
+    refVotes.on('value', (snapshot) => {
       for (let candidate in snapshot.val()) {
         let ref = firebase.database().ref(`votes/${candidate}`)
         ref.once('value', (snapshot) => {
@@ -115,7 +115,6 @@ class Main extends Component {
           <div>Loading...</div>
         ) : (
           <div>
-            <div>{ this.state.count }</div>
             <Button onClick={this.resetVote}>Reset Vote</Button>
             <Item.Group items={items} />
           </div>

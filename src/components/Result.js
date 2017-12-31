@@ -10,7 +10,7 @@ class Result extends Component {
 
   componentDidMount() {
     let refVotes = firebase.database().ref('votes')
-    refVotes.once('value', (snapshot) => {
+    refVotes.on('value', (snapshot) => {
       for (let candidate in snapshot.val()) {
         let ref = firebase.database().ref(`votes/${candidate}`)
         ref.once('value', (snapshot) => {
