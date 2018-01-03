@@ -96,17 +96,26 @@ class Main extends Component {
     ]
     const { votes } = this.state
     const candidates = Object.keys(votes)
-    const items = candidates.map((candidate, i) => ({
-        childKey: i + 1,
-        children: <Button
+    const items = candidates.map((candidate, i) => ((
+      <Item
+        key={i}
+        style={{
+          margin: '0.5em 0'
+        }}
+      >
+        <Button
+          key={i}
           size='massive'
           color={colors[i]}
           onClick={() => this.handleClick(candidate)}
+          style={{
+            minWidth: '200px'
+          }}
           disabled={this.state.isVoted}>
           {candidate}
         </Button>
-      })
-    )
+      </Item>
+    )))
 
     return (
       <Container>
@@ -116,7 +125,7 @@ class Main extends Component {
         ) : (
           <div>
             <Button onClick={this.resetVote}>Reset Vote</Button>
-            <Item.Group items={items} />
+            <Item.Group>{items}</Item.Group>
           </div>
         )}
       </Container>
