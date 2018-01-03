@@ -9,28 +9,25 @@ class Result extends Component {
   }
 
   componentDidMount() {
-    let refVotes = firebase.database().ref('votes')
+    const refVotes = firebase.database().ref('votes')
     refVotes.on('value', (snapshot) => {
+      let items = []
       for (let candidate in snapshot.val()) {
-        let ref = firebase.database().ref(`votes/${candidate}`)
+        const ref = firebase.database().ref(`votes/${candidate}`)
         ref.once('value', (snapshot) => {
           let count = 0
           if (snapshot.val() !== null) {
             count = snapshot.val().count
           }
-          this.setState({
-            data: [
-              ...this.state.data,
-              {
-                text: candidate,
-                value: count,
-              }
-            ]
+          items.push({
+            text: candidate,
+            value: count,
           })
         })
       }
       this.setState({
         loading: false,
+        data: items,
       })
     })
   }
