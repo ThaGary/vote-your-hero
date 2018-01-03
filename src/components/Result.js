@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Container, Header, Segment } from 'semantic-ui-react'
 import firebase from '../firebase'
 import BarChart from 'react-bar-chart'
 
@@ -38,14 +39,17 @@ class Result extends Component {
     const margin = {left: 100, right: 100, top: 50, bottom: 50}
 
     return (
-      <div>
-        <BarChart
-          width={width}
-          height={height}
-          margin={margin}
-          data={this.state.data}
-        />
-      </div>
+      <Container>
+        <Segment>
+          <Header as='h1'>The Winner is...</Header>
+          <BarChart
+            width={width}
+            height={height}
+            margin={margin}
+            data={this.state.data}
+          />
+        </Segment>
+      </Container>
     )
   }
 }

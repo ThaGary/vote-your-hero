@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Container, Header, Item } from 'semantic-ui-react'
+import { Button, Container, Header, Item, Segment } from 'semantic-ui-react'
 import firebase from '../firebase'
 
 class Home extends Component {
@@ -102,7 +102,7 @@ class Home extends Component {
           color={colors[i]}
           onClick={() => this.handleClick(candidate)}
           style={{
-            minWidth: '200px'
+            minWidth: '300px'
           }}
           disabled={this.state.isVoted}>
           {candidate}
@@ -112,15 +112,17 @@ class Home extends Component {
 
     return (
       <Container>
-        <Header as='h1'>Vote Your Hero!</Header>
-        {this.state.loading ? (
-          <div>Loading...</div>
-        ) : (
-          <div>
-            <Button onClick={this.resetVote}>Reset Vote</Button>
-            <Item.Group>{items}</Item.Group>
-          </div>
-        )}
+        <Segment>
+          <Header as='h1'>Vote Your Hero!</Header>
+          {this.state.loading ? (
+            <div>Loading...</div>
+          ) : (
+            <div>
+              <Button onClick={this.resetVote}>Reset Vote</Button>
+              <Item.Group>{items}</Item.Group>
+            </div>
+          )}
+        </Segment>
       </Container>
     )
   }

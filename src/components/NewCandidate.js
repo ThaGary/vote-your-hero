@@ -1,5 +1,13 @@
 import React, { Component } from 'react'
-import { Button } from 'semantic-ui-react'
+import {
+  Button,
+  Container,
+  Divider,
+  Form,
+  Header,
+  List,
+  Segment
+} from 'semantic-ui-react'
 import firebase from '../firebase'
 
 class NewCandidate extends Component {
@@ -45,6 +53,10 @@ class NewCandidate extends Component {
     }
   }
 
+  handleSubmit = () => {
+    this.addCandidate()
+  }
+
   componentDidMount() {
     let refVotes = firebase.database().ref('votes')
     refVotes.once('value', (snapshot) => {
@@ -60,26 +72,35 @@ class NewCandidate extends Component {
     })
   }
 
-  handleClick = () => {
-    this.addCandidate()
-  }
-
   render() {
     return (
-      <div>
-        <Button onClick={this.clearList}>Clear List</Button>
-        <div>
-          <input type="text" onChange={this.handleChange} onKeyPress={this.handleKeyPress} value={this.state.text} />
-          <button onClick={this.handleClick}>Add</button>
-          {this.state.loading ? (
-            <div>Loading...</div>
-          ) : (
-            <ul>
-              {this.state.candidates.map((c, i) => <li key={i}>{c}</li>)}
-            </ul>
-          )}
-        </div>
-      </div>
+      <Container>
+        <Segment>
+          <Header as='h1'>Add Your Candidate</Header>
+          <Button onClick={this.clearList}>Clear List</Button>
+          <Divider hidden />
+          <div>
+            <Form onSubmit={this.handleSubmit}>
+              <Form.Group>
+                <Form.Input
+                  placeholder='Candidate Name'
+                  onChange={this.handleChange}
+                  onKeyPress={this.handleKeyPress}
+                  value={this.state.text}
+                />
+                <Form.Button content='Add' />
+              </Form.Group>
+            </Form>
+            {this.state.loading ? (
+              <div>Loading...</div>
+            ) : (
+              <List bulleted>
+                {this.state.candidates.map((c, i) => <List.Item key={i}>{c}</List.Item>)}
+              </List>
+            )}
+          </div>
+        </Segment>
+      </Container>
     )
   }
 }
