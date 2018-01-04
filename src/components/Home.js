@@ -102,7 +102,7 @@ class Home extends Component {
           color={colors[i]}
           onClick={() => this.handleClick(candidate)}
           style={{
-            minWidth: '300px'
+            minWidth: '200px'
           }}
           disabled={this.state.isVoted}>
           {candidate}
