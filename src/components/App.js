@@ -10,18 +10,20 @@ import Result from './Result'
 
 class App extends Component {
   render() {
+    const baseUrl = '/vote-your-hero'
+
     return (
       <Router>
         <div>
           <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/candidates/">Add New Candidate</Link></li>
-            <li><Link to="/results/">Results</Link></li>
+            <li><Link to={baseUrl + '/'}>Home</Link></li>
+            <li><Link to={baseUrl + '/candidates/'}>Add New Candidate</Link></li>
+            <li><Link to={baseUrl + '/results/'}>Results</Link></li>
           </ul>
           <hr/>
-          <Route exact path="/" component={Home} />
-          <Route path="/candidates/" component={NewCandidate} />
-          <Route path="/results/" component={Result} />
+          <Route exact path={baseUrl + '/'} component={Home} />
+          <Route path={baseUrl + '/candidates/'} component={NewCandidate} />
+          <Route path={baseUrl + '/results/'} component={Result} />
         </div>
       </Router>
     )
