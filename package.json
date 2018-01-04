@@ -1,5 +1,6 @@
 {
   "name": "vote-your-hero",
+  "homepage": "https://prontotools.github.io/vote-your-hero/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,12 +13,14 @@
   "devDependencies": {
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.0",
+    "gh-pages": "^1.1.0",
     "react-scripts": "1.0.17"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "yarn build && gh-pages -d build"
   }
 }
