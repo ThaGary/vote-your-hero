@@ -36,7 +36,7 @@ class Home extends Component {
       })
       this.setState({
         count: count + 1,
-        //isVoted: true,
+        isVoted: true,
       })
     })
   }
