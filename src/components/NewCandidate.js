@@ -24,6 +24,19 @@ class NewCandidate extends Component {
     })
   }
 
+  resetVote = () => {
+    const { candidates } = this.state
+    candidates.forEach(c => {
+      firebase.database().ref(`items/${c.key}`).set({
+        name: c.name,
+        count: 0,
+      })
+    })
+    this.setState({
+      isVoted: false,
+    })
+  }
+
   clearList = () => {
     const ref = firebase.database().ref('items')
     ref.remove()
@@ -76,6 +89,7 @@ class NewCandidate extends Component {
       <Container>
         <Segment>
           <Header as='h1'>Add Your Candidate</Header>
+          <Button onClick={this.resetVote}>Reset Vote</Button>
           <Button onClick={this.clearList}>Clear List</Button>
           <Divider hidden />
           <div>

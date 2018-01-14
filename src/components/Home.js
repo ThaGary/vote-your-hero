@@ -9,19 +9,6 @@ class Home extends Component {
     loading: true,
   }
 
-  resetVote = () => {
-    const { candidates } = this.state
-    candidates.forEach(c => {
-      firebase.database().ref(`items/${c.key}`).set({
-        name: c.name,
-        count: 0,
-      })
-    })
-    this.setState({
-      isVoted: false,
-    })
-  }
-
   handleClick = (candidate) => {
     candidate.count++
     firebase.database().ref(`items/${candidate.key}`).set({
@@ -103,7 +90,6 @@ class Home extends Component {
             <div>Loading...</div>
           ) : (
             <div>
-              <Button onClick={this.resetVote}>Reset Vote</Button>
               <Item.Group>{items}</Item.Group>
             </div>
           )}
