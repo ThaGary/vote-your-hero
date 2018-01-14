@@ -1,5 +1,11 @@
 import React, { Component } from 'react'
-import { Button, Container, Header, Item, Segment } from 'semantic-ui-react'
+import {
+  Button,
+  Container,
+  Header,
+  Item,
+  Segment
+} from 'semantic-ui-react'
 import firebase from '../firebase'
 
 class Home extends Component {
@@ -7,6 +13,8 @@ class Home extends Component {
     candidates: [],
     isVoted: false,
     loading: true,
+    myVoteKey: '',
+    myVoteName: '',
   }
 
   handleClick = (candidate) => {
@@ -17,6 +25,28 @@ class Home extends Component {
     })
     this.setState({
       isVoted: true,
+      myVoteKey: candidate.key,
+      myVoteName: candidate.name,
+    })
+  }
+
+  getCandidate = (key) => (
+    firebase.database().ref(`items/${key}`).once('value')
+      .then(data => data.val())
+  )
+
+  cancelVote = () => {
+    const { myVoteKey } = this.state
+    this.getCandidate(myVoteKey).then(c => {
+      firebase.database().ref(`items/${myVoteKey}`).set({
+        name: c.name,
+        count: c.count - 1,
+      })
+      this.setState({
+        isVoted: false,
+        myVoteKey: '',
+        myVoteName: '',
+      })
     })
   }
 
@@ -60,7 +90,13 @@ class Home extends Component {
       'youtube',
     ]
 
-    const { candidates, isVoted, loading } = this.state
+    const {
+      candidates,
+      isVoted,
+      loading,
+      myVoteKey,
+      myVoteName
+    } = this.state
     const items = candidates.map((c, i) => ((
       <Item
         key={i}
@@ -86,6 +122,11 @@ class Home extends Component {
       <Container>
         <Segment>
           <Header as='h1'>Vote Your Hero!</Header>
+          {myVoteKey !== '' ? (
+            <div>
+              You've voted <strong>{myVoteName}</strong>. <Button size='mini' onClick={this.cancelVote}>Change your Mind?</Button>
+            </div>
+          ) : null}
           {loading ? (
             <div>Loading...</div>
           ) : (

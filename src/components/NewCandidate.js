@@ -68,7 +68,7 @@ class NewCandidate extends Component {
 
   componentDidMount() {
     firebase.database().ref('items').on('value', (data) => {
-      const items = data.val();
+      const items = data.val()
       let candidates = [];
       for (let key in items) {
         let item = items[key]
