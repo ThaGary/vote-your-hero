@@ -15,9 +15,9 @@ class Home extends Component {
       name: candidate.name,
       count: candidate.count,
     })
-    //this.setState({
-      //isVoted: true,
-    //})
+    this.setState({
+      isVoted: true,
+    })
   }
 
   componentDidMount() {
