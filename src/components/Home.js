@@ -73,7 +73,7 @@ class Home extends Component {
       'youtube',
     ]
 
-    const { candidates, isVoted } = this.state
+    const { candidates, isVoted, loading } = this.state
     const items = candidates.map((c, i) => ((
       <Item
         key={i}
@@ -99,7 +99,7 @@ class Home extends Component {
       <Container>
         <Segment>
           <Header as='h1'>Vote Your Hero!</Header>
-          {this.state.loading ? (
+          {loading ? (
             <div>Loading...</div>
           ) : (
             <div>
