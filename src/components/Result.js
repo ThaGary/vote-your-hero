@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Container, Header, Segment } from 'semantic-ui-react'
-import firebase from '../firebase'
 import BarChart from 'react-bar-chart'
+import firebase from '../firebase'
 
 class Result extends Component {
   state = {
@@ -10,25 +10,19 @@ class Result extends Component {
   }
 
   componentDidMount() {
-    const refVotes = firebase.database().ref('votes')
-    refVotes.on('value', (snapshot) => {
-      let items = []
-      for (let candidate in snapshot.val()) {
-        const ref = firebase.database().ref(`votes/${candidate}`)
-        ref.once('value', (snapshot) => {
-          let count = 0
-          if (snapshot.val() !== null) {
-            count = snapshot.val().count
-          }
-          items.push({
-            text: candidate,
-            value: count,
-          })
+    firebase.database().ref('items').on('value', (data) => {
+      const items = data.val();
+      let candidates = []
+      for (let key in items) {
+        let item = items[key]
+        candidates.push({
+          text: item.name,
+          value: item.count,
         })
       }
       this.setState({
-        loading: false,
-        data: items,
+        data: candidates,
+        loading: false
       })
     })
   }

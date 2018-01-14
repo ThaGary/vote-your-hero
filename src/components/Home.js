@@ -4,62 +4,47 @@ import firebase from '../firebase'
 
 class Home extends Component {
   state = {
-    votes: {},
-    loading: true,
+    candidates: [],
     isVoted: false,
+    loading: true,
   }
 
   resetVote = () => {
-    const { votes } = this.state
-    const candidates = Object.keys(votes)
-    let initialVotes = {}
-    candidates.forEach((candidate) => {
-      let ref = firebase.database().ref(`votes/${candidate}`)
-      ref.remove()
-      ref.update({
-        count: 0
+    const { candidates } = this.state
+    candidates.forEach(c => {
+      firebase.database().ref(`items/${c.key}`).set({
+        name: c.name,
+        count: 0,
       })
-      initialVotes[candidate] = 0
     })
     this.setState({
-      votes: initialVotes,
       isVoted: false,
     })
   }
 
   handleClick = (candidate) => {
-    const ref = firebase.database().ref(`votes/${candidate}`)
-    ref.once('value', (snapshot) => {
-      const count = snapshot.val().count
-      ref.update({
-        count: count + 1
-      })
-      this.setState({
-        count: count + 1,
-        isVoted: true,
-      })
+    candidate.count++
+    firebase.database().ref(`items/${candidate.key}`).set({
+      name: candidate.name,
+      count: candidate.count,
     })
+    //this.setState({
+      //isVoted: true,
+    //})
   }
 
   componentDidMount() {
-    let refVotes = firebase.database().ref('votes')
-    let initialVotes = {}
-    refVotes.on('value', (snapshot) => {
-      for (let candidate in snapshot.val()) {
-        let ref = firebase.database().ref(`votes/${candidate}`)
-        ref.once('value', (snapshot) => {
-          let count = 0
-          if (snapshot.val() !== null) {
-            count = snapshot.val().count
-          }
-          initialVotes[candidate] = count
-          this.setState({
-            votes: initialVotes,
-          })
-        })
+    firebase.database().ref('items').on('value', (data) => {
+      const items = data.val();
+      let candidates = [];
+      for (let key in items) {
+        let item = items[key]
+        item.key = key
+        candidates.push(item)
       }
       this.setState({
-        loading: false,
+        candidates,
+        loading: false
       })
     })
   }
@@ -87,9 +72,9 @@ class Home extends Component {
       'vk',
       'youtube',
     ]
-    const { votes } = this.state
-    const candidates = Object.keys(votes)
-    const items = candidates.map((candidate, i) => ((
+
+    const { candidates, isVoted } = this.state
+    const items = candidates.map((c, i) => ((
       <Item
         key={i}
         style={{
@@ -97,15 +82,15 @@ class Home extends Component {
         }}
       >
         <Button
-          key={i}
+          key={c.key}
           size='massive'
           color={colors[i]}
-          onClick={() => this.handleClick(candidate)}
+          onClick={() => this.handleClick(c)}
           style={{
             minWidth: '200px'
           }}
-          disabled={this.state.isVoted}>
-          {candidate}
+          disabled={isVoted}>
+          {c.name}
         </Button>
       </Item>
     )))

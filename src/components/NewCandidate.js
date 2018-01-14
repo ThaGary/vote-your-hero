@@ -12,9 +12,9 @@ import firebase from '../firebase'
 
 class NewCandidate extends Component {
   state = {
-    text: '',
     candidates: [],
     loading: true,
+    text: '',
   }
 
   handleChange = (e) => {
@@ -25,31 +25,27 @@ class NewCandidate extends Component {
   }
 
   clearList = () => {
-    const ref = firebase.database().ref('votes')
+    const ref = firebase.database().ref('items')
     ref.remove()
     this.setState({
       candidates: [],
+      text: '',
     })
   }
 
   addCandidate = () => {
-    let { text, candidates } = this.state
+    const { candidates, text } = this.state
     if (text !== '' ) {
-      const ref = firebase.database().ref(`votes/${text}`)
-      ref.update({
-        count: 0
-      })
-      candidates.push(text)
+      let item = {
+        name: text,
+        count: 0,
+      }
+      const newItem = firebase.database().ref('items').push(item)
+      item.key = newItem.key
       this.setState({
-        candidates,
+        candidates: candidates.concat(item),
         text: '',
       })
-    }
-  }
-
-  handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      this.addCandidate()
     }
   }
 
@@ -58,21 +54,24 @@ class NewCandidate extends Component {
   }
 
   componentDidMount() {
-    let refVotes = firebase.database().ref('votes')
-    refVotes.once('value', (snapshot) => {
-      if (snapshot.val() !== null) {
-        const candidates = Object.keys(snapshot.val())
-        this.setState({
-          candidates,
-        })
+    firebase.database().ref('items').on('value', (data) => {
+      const items = data.val();
+      let candidates = [];
+      for (let key in items) {
+        let item = items[key]
+        item.key = key
+        candidates.push(item)
       }
       this.setState({
-        loading: false,
+        candidates,
+        loading: false
       })
     })
   }
 
   render() {
+    const { candidates, loading, text } = this.state
+
     return (
       <Container>
         <Segment>
@@ -85,17 +84,20 @@ class NewCandidate extends Component {
                 <Form.Input
                   placeholder='Candidate Name'
                   onChange={this.handleChange}
-                  onKeyPress={this.handleKeyPress}
-                  value={this.state.text}
+                  value={text}
                 />
                 <Form.Button content='Add' />
               </Form.Group>
             </Form>
-            {this.state.loading ? (
+            {loading ? (
               <div>Loading...</div>
             ) : (
               <List bulleted>
-                {this.state.candidates.map((c, i) => <List.Item key={i}>{c}</List.Item>)}
+                {
+                  candidates.map(c  => (
+                    <List.Item key={c.key}>{c.name}</List.Item>
+                  ))
+                }
               </List>
             )}
           </div>
