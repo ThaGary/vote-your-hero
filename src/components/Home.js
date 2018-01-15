@@ -18,11 +18,11 @@ class Home extends Component {
   }
 
   handleClick = (candidate) => {
-    candidate.count++
-    firebase.database().ref(`items/${candidate.key}`).set({
-      name: candidate.name,
-      count: candidate.count,
-    })
+    let ref = firebase.database().ref(`items/${candidate.key}`)
+    ref.transaction(c => ({
+      name: c.name,
+      count: c.count + 1,
+    }))
     this.setState({
       isVoted: true,
       myVoteKey: candidate.key,
@@ -38,10 +38,11 @@ class Home extends Component {
   cancelVote = () => {
     const { myVoteKey } = this.state
     this.getCandidate(myVoteKey).then(c => {
-      firebase.database().ref(`items/${myVoteKey}`).set({
+      let ref = firebase.database().ref(`items/${myVoteKey}`)
+      ref.transaction(c => ({
         name: c.name,
         count: c.count - 1,
-      })
+      }))
       this.setState({
         isVoted: false,
         myVoteKey: '',
