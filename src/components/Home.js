@@ -55,10 +55,19 @@ class Home extends Component {
     firebase.database().ref('items').on('value', (data) => {
       const items = data.val();
       let candidates = [];
+      let total = 0
       for (let key in items) {
         let item = items[key]
         item.key = key
         candidates.push(item)
+        total += item.count
+      }
+      if(total === 0) {
+        this.setState({
+          isVoted: false,
+          myVoteKey: '',
+          myVoteName: '',
+        })
       }
       this.setState({
         candidates,
