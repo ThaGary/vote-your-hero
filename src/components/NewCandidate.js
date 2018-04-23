@@ -8,13 +8,14 @@ import {
   List,
   Segment
 } from 'semantic-ui-react'
-import firebase from '../firebase'
+import firebase, { auth, provider } from '../firebase'
 
 class NewCandidate extends Component {
   state = {
     candidates: [],
     loading: true,
     text: '',
+    user: null
   }
 
   handleChange = (e) => {
@@ -67,6 +68,12 @@ class NewCandidate extends Component {
   }
 
   componentDidMount() {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ user })
+      }
+    })
+
     firebase.database().ref('items').on('value', (data) => {
       const items = data.val()
       let candidates = [];
@@ -82,11 +89,36 @@ class NewCandidate extends Component {
     })
   }
 
+  login = () => {
+    auth.signInWithRedirect(provider)
+      .then((result) => {
+        const user = result.user
+        this.setState({
+          user
+        })
+      })
+  }
+
+  logout = () => {
+    auth.signOut()
+      .then(() => {
+        this.setState({
+          user: null
+        })
+      })
+  }
+
   render() {
     const { candidates, loading, text } = this.state
 
     return (
       <Container>
+        {this.state.user ? this.state.user.email : ''}
+        {this.state.user ?
+          <Button onClick={this.logout}>Logout</Button>
+        :
+          <Button onClick={this.login}>Log In</Button>
+        }
         <Segment>
           <Header as='h1'>Add Your Candidate</Header>
           <Button onClick={this.resetVote}>Reset Vote</Button>
