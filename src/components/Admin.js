@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom'
 import NewCandidate from './NewCandidate'
 import Result from './Result'
+import VoterList from './VoterList'
 
 class Admin extends Component {
   render() {
@@ -21,6 +22,7 @@ class Admin extends Component {
           <hr/>
           <Route path='/candidates/' component={NewCandidate} />
           <Route path='/results/' component={Result} />
+          <Route path='/voters/' component={VoterList} />
         </div>
       </Router>
     )
