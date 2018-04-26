@@ -6,7 +6,7 @@ import {
   Item,
   Segment
 } from 'semantic-ui-react'
-import firebase from '../firebase'
+import firebase, { auth } from '../firebase'
 
 class Home extends Component {
   state = {
@@ -15,6 +15,7 @@ class Home extends Component {
     loading: true,
     myVoteKey: '',
     myVoteName: '',
+    user: null
   }
 
   handleClick = (candidate) => {
@@ -22,7 +23,9 @@ class Home extends Component {
     ref.transaction(c => ({
       name: c.name,
       count: c.count + 1,
+      voters: c.voters + ',' + this.state.user.email.split('@')[0],
     }))
+
     this.setState({
       isVoted: true,
       myVoteKey: candidate.key,
@@ -39,10 +42,17 @@ class Home extends Component {
     const { myVoteKey } = this.state
     this.getCandidate(myVoteKey).then(c => {
       let ref = firebase.database().ref(`items/${myVoteKey}`)
-      ref.transaction(c => ({
-        name: c.name,
-        count: c.count - 1,
-      }))
+      ref.transaction(c => {
+        const voterList = c.voters.split(',')
+        voterList.splice(voterList.indexOf(this.state.user.email), 1)
+        const voters = voterList.join()
+
+        return {
+          name: c.name,
+          count: c.count - 1,
+          voters,
+        }
+      })
       this.setState({
         isVoted: false,
         myVoteKey: '',
@@ -52,6 +62,12 @@ class Home extends Component {
   }
 
   componentDidMount() {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ user })
+      }
+    })
+
     firebase.database().ref('items').on('value', (data) => {
       const items = data.val();
       let candidates = [];

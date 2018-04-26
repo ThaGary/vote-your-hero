@@ -31,6 +31,7 @@ class NewCandidate extends Component {
       firebase.database().ref(`items/${c.key}`).set({
         name: c.name,
         count: 0,
+        voters: '',
       })
     })
     this.setState({
@@ -53,6 +54,7 @@ class NewCandidate extends Component {
       let item = {
         name: text,
         count: 0,
+        voters: '',
       }
       const newItem = firebase.database().ref('items').push(item)
       item.key = newItem.key
