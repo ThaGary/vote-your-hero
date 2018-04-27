@@ -6,7 +6,8 @@ import { auth, provider } from '../firebase'
 
 class App extends Component {
   state = {
-    user: null
+    user: null,
+    loading: true,
   }
 
   componentDidMount() {
@@ -14,6 +15,9 @@ class App extends Component {
       if (user) {
         this.setState({ user })
       }
+      this.setState({
+        loading: false
+      })
     })
   }
 
@@ -22,7 +26,8 @@ class App extends Component {
       .then((result) => {
         const user = result.user
         this.setState({
-          user
+          user,
+          loading: false
         })
       })
   }
@@ -37,15 +42,18 @@ class App extends Component {
           currentPath === baseUrl ||
           currentPath === baseUrl.substr(0, baseUrl.length - 1) ||
           currentPath === '/'
-        ) ? (
-          this.state.user
-          ? <Home /> :
-          <Container>
-            <Segment>
-              <Button onClick={this.login}>Log In</Button>
-            </Segment>
-          </Container>
-        ) : (
+        ) ?
+        (
+          this.state.user ?
+            this.state.loading ? 'Loading...' : <Home />
+          :
+            this.state.loading ? 'Loading...' : <Container>
+              <Segment>
+                <Button onClick={this.login}>Log In</Button>
+              </Segment>
+            </Container>
+        ) :
+        (
           <Admin baseUrl={baseUrl} />
         )}
       </React.Fragment>
