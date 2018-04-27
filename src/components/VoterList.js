@@ -7,21 +7,24 @@ class VoterList extends Component {
   state = {
     candidates: [],
     voters: [],
-    results: [],
     loading: true,
   }
 
   componentDidMount() {
     firebase.database().ref('items').on('value', (data) => {
       const items = data.val();
+      const candidates = []
+      const voters = []
       for (let key in items) {
         let item = items[key]
         const count = _.countBy(item.voters.split(',').filter(x => x))
-        this.setState(prevState => ({
-          candidates: prevState.candidates.concat(item.name),
-          voters: prevState.voters.concat(count)
-        }))
+        candidates.push(item.name)
+        voters.push(count)
       }
+      this.setState({
+        candidates,
+        voters,
+      })
     })
   }
 
